@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weaviate-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weaviate
+  template:
+    metadata:
+      labels:
+        app: weaviate
+    spec:
+      containers:
+        - name: weaviate
+          image: busybox
+          command: ["sleep", "3600"]
+          ports:
+            - containerPort: 8080
+      nodeSelector:
+        app: weaviate
