@@ -31,7 +31,7 @@ module "vpc" {
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version = "20.8.4"  # ✅ use latest supported version
+  version = "20.35.0"
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.27"
 
@@ -41,15 +41,22 @@ module "eks" {
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
-  manage_aws_auth_config = true
 
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::891612581521:role/jenkins-eks-iam-auth-role"
-      username = "jenkins"
-      groups   = ["system:masters"]
+  # Use access_entries for access management
+  access_entries = {
+    jenkins_access = {
+      principal_arn = "arn:aws:iam::891612581521:role/jenkins-eks-iam-auth-role"
+      policy_associations = {
+        jenkins_policy = {
+          policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+          access_scope = {
+            type       = "cluster"
+            namespaces = ["default"]
+          }
+        }
+      }
     }
-  ]
+  }
 
   eks_managed_node_groups = {
     frontend = {
