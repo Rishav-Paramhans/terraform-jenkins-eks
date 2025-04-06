@@ -30,10 +30,11 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
-
+  source          = "terraform-aws-modules/eks/aws"
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.27"
+
+  enable_irsa = true
 
   cluster_endpoint_public_access = true
 
@@ -41,17 +42,66 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = {
-    nodes = {
-      min_size     = 1
-      max_size     = 3
-      desired_size = 2
+    frontend = {
+      instance_type = ["t3.medium"]
+      desired_size   = 1
+      min_size       = 1
+      max_size       = 3
+      labels = {
+        app = "frontend"
+      }
+    }
 
-      instance_type = ["t2.small"]
+    backend = {
+      instance_type = ["t3.medium"]
+      desired_size   = 1
+      min_size       = 1
+      max_size       = 3
+      labels = {
+        app = "backend"
+      }
+    }
+
+    redis = {
+      instance_type = ["t3.medium"]
+      desired_size   = 1
+      min_size       = 1
+      max_size       = 3
+      labels = {
+        app = "redis"
+      }
+    }
+
+    weaviate = {
+      instance_types = ["m5.large"] # More memory/CPU for DB
+      desired_size   = 1
+      min_size       = 1
+      max_size       = 3
+      labels = {
+        app = "weaviate"
+      }
+    }
+
+    ollama = {
+      instance_types = ["g4dn.xlarge"] # GPU support
+      desired_size   = 2
+      min_size       = 1
+      max_size       = 3
+      labels = {
+        app = "ollama"
+        gpu = "true"
+      }
+      taints = [{
+        key    = "gpu"
+        value  = "true"
+        effect = "NO_SCHEDULE"
+      }]
     }
   }
 
   tags = {
     Environment = "dev"
     Terraform   = "true"
+    Project     = "MyApp"
   }
 }
