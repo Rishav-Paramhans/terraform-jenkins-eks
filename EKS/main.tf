@@ -40,14 +40,16 @@ module "eks" {
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
-  map_roles = [           
+  manage_aws_auth_config = true
+
+  aws_auth_roles = [
     {
       rolearn  = "arn:aws:iam::891612581521:role/jenkins-eks-iam-auth-role"
       username = "jenkins"
       groups   = ["system:masters"]
     }
   ]
-  
+
   eks_managed_node_groups = {
     frontend = {
       instance_type = ["t3.medium"]
