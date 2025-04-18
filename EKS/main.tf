@@ -49,7 +49,7 @@ module "eks" {
       instance_type = ["t3.medium"]
       desired_size   = 1
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
       labels = {
         app = "frontend"
       }
@@ -59,7 +59,7 @@ module "eks" {
       instance_type = ["t3.medium"]
       desired_size   = 1
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
       labels = {
         app = "backend"
       }
@@ -69,7 +69,7 @@ module "eks" {
       instance_type = ["t3.medium"]
       desired_size   = 1
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
       labels = {
         app = "redis"
       }
@@ -79,7 +79,7 @@ module "eks" {
       instance_types = ["m5.large"] # More memory/CPU for DB
       desired_size   = 1
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
       labels = {
         app = "weaviate"
       }
@@ -87,9 +87,9 @@ module "eks" {
 
     ollama = {
       instance_types = ["g4dn.xlarge"] # GPU support
-      desired_size   = 3
+      desired_size   = 1
       min_size       = 1
-      max_size       = 5
+      max_size       = 2
       labels = {
         app = "ollama"
         gpu = "true"
