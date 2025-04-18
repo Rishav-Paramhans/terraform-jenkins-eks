@@ -25,7 +25,8 @@ module "eks" {
   # Directly specify the VPC and Subnet IDs instead of referencing remote state
   vpc_id     = "vpc-0b1dd112d58d0addf"  # Replace with your VPC ID
   subnet_ids = [
-    "subnet-03cc14906803c221e"  # Replace with your subnet IDs (e.g., private subnets)
+    "subnet-03cc14906803c221e",  # Replace with your subnet IDs (e.g., private subnets)
+    "subnet-0125496e97ff80187"
   ]
 
   # Use access_entries for access management
