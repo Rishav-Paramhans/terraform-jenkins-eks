@@ -1,12 +1,12 @@
 # Reference the VPC + subnets created by the Jenkins Terraform
-data "terraform_remote_state" "jenkins_vpc" {
-  backend = "s3"
-  config = {
-    bucket = "private-ai-iac-bucket"
-    key    = "jenkins/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
+#data "terraform_remote_state" "jenkins_vpc" {
+#  backend = "s3"
+#  config = {
+#    bucket = "private-ai-iac-bucket"
+#    key    = "jenkins/terraform.tfstate"
+#    region = "us-east-1"
+#  }
+#}
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
@@ -19,8 +19,14 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   # Reference VPC and Subnets from remote Jenkins stack
-  vpc_id     = data.terraform_remote_state.jenkins_vpc.outputs.vpc_id
-  subnet_ids = data.terraform_remote_state.jenkins_vpc.outputs.private_subnet_ids
+  #vpc_id     = data.terraform_remote_state.jenkins_vpc.outputs.vpc_id
+  #subnet_ids = data.terraform_remote_state.jenkins_vpc.outputs.private_subnet_ids
+  
+  # Directly specify the VPC and Subnet IDs instead of referencing remote state
+  vpc_id     = "vpc-0b1dd112d58d0addf"  # Replace with your VPC ID
+  subnet_ids = [
+    "subnet-03cc14906803c221e"  # Replace with your subnet IDs (e.g., private subnets)
+  ]
 
   # Use access_entries for access management
   access_entries = {
