@@ -1,65 +1,72 @@
-# Reference the VPC + subnets created by the Jenkins Terraform
-#data "terraform_remote_state" "jenkins_vpc" {
-#  backend = "s3"
-#  config = {
-#    bucket = "private-ai-iac-bucket"
-#    key    = "jenkins/terraform.tfstate"
-#    region = "us-east-1"
-#  }
-#}
+terraform {
+  required_version = ">= 1.5.0"
+  backend "s3" {
+    bucket = "private-ai-iac-bucket"
+    key    = "eks-cluster/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Reference network outputs using terraform_remote_state
+data "terraform_remote_state" "network" {
+  backend = "remote"
+  config = {
+    organization = "VJ_Terraform"
+    workspaces = {
+      name = "network_workspace" # Name of the network workspace in TFC
+    }
+  }
+}
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version = "20.35.0"
-  cluster_name    = "my-eks-cluster"
-  cluster_version = "1.27.3"
+  version         = "20.35.0"
+  cluster_name    = var.cluster_name
+  cluster_version = var.cluster_version
 
-  enable_irsa = true
+  vpc_id                                   = "vpc-01ca446be893bad0e"
+  subnet_ids                               = ["subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
+  enable_irsa                              = true
+  enable_cluster_creator_admin_permissions = false
 
   cluster_endpoint_public_access = true
 
-  # Reference VPC and Subnets from remote Jenkins stack
-  #vpc_id     = data.terraform_remote_state.jenkins_vpc.outputs.vpc_id
-  #subnet_ids = data.terraform_remote_state.jenkins_vpc.outputs.private_subnet_ids
-  
-  # Directly specify the VPC and Subnet IDs instead of referencing remote state
-  vpc_id     = "vpc-0b1dd112d58d0addf"  # Replace with your VPC ID
-  subnet_ids = [
-    "subnet-03cc14906803c221e",  # Replace with your subnet IDs (e.g., private subnets)
-    "subnet-0125496e97ff80187"
-  ]
-
   # Use access_entries for access management
+  /*
   access_entries = {
     jenkins_access = {
-      principal_arn = "arn:aws:iam::891612581521:role/jenkins-eks-iam-auth-role"
+      principal_arn = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
       policy_associations = {
         jenkins_policy = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            type       = "cluster"
+            type = "cluster"
           }
         }
       }
     }
-   # Add the new rishav_access entry for the IAM user "rishav-user"
-    rishav_access = {
-      principal_arn = "arn:aws:iam::891612581521:user/rishav-user"
+    
+    # Add the new vaibhav_access entry for the IAM user "vaibhav-user"
+    vaibhav_access = {
+      principal_arn = "arn:aws:iam::891612581521:user/vaibhav-user"
       policy_associations = {
         rishav_policy = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            type       = "cluster"
+            type = "cluster"
           }
         }
       }
     }
-  } 
-  
-  
+  }*/
+
   eks_managed_node_groups = {
     frontend = {
-      instance_type = ["t3.medium"]
+      instance_types = ["t3.medium"]
       desired_size   = 1
       min_size       = 1
       max_size       = 2
@@ -69,7 +76,7 @@ module "eks" {
     }
 
     backend = {
-      instance_type = ["t3.medium"]
+      instance_types = ["t3.medium"]
       desired_size   = 1
       min_size       = 1
       max_size       = 2
@@ -79,7 +86,7 @@ module "eks" {
     }
 
     redis = {
-      instance_type = ["t3.medium"]
+      instance_types = ["t3.medium"]
       desired_size   = 1
       min_size       = 1
       max_size       = 2
@@ -121,3 +128,4 @@ module "eks" {
     Project     = "MyApp"
   }
 }
+
