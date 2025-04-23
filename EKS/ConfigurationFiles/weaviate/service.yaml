@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: weaviate-service
 spec:
-  type: ClusterIP
   selector:
-    app: weaviate
+    app: weaviate  # This should match the label in your deployment.yaml
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+  type: ClusterIP  # Use ClusterIP for internal communication; Change to LoadBalancer if external access is needed

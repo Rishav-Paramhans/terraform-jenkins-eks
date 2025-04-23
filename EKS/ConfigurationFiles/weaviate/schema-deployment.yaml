@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schema-setup-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: schema-setup
+  template:
+    metadata:
+      labels:
+        app: schema-setup
+    spec:
+      containers:
+        - name: schema-setup
+          image: python:3.9-slim
+          command:
+            - bash
+            - -c
+            - |
+              pip install -r /PrivateAI-WevaiateDB/requirements.txt &&
+              python /PrivateAI-WevaiateDB/createSchemaWeaviateDB.py
+          env:
+            - name: WAIT_HOSTS
+              value: "weaviate:8080"
+          volumeMounts:
+            - name: schema-setup-scripts
+              mountPath: /PrivateAI-WevaiateDB
+      volumes:
+        - name: schema-setup-scripts
+          hostPath:
+            path: /path/to/your/local/scripts  # Adjust path to your local script location
+            type: Directory

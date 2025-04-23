@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-setup-service
+spec:
+  selector:
+    app: schema-setup
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
