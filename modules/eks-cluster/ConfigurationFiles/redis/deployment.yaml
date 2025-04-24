@@ -10,13 +10,12 @@ spec:
   template:
     metadata:
       labels:
-        app: redis
+        app: redis  # This label is used to match the nodes in the nodeSelector
     spec:
       containers:
         - name: redis
-          image: busybox
-          command: ["sleep", "3600"]
+          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/redis:latest  # Your Redis image
           ports:
             - containerPort: 6379
       nodeSelector:
-        app: redis
+        app: redis  # Ensures the pod is scheduled on nodes with the label app=redis

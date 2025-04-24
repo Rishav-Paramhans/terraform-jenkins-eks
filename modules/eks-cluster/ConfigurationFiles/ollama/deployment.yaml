@@ -14,14 +14,18 @@ spec:
     spec:
       containers:
         - name: ollama
-          image: busybox
-          command: ["sleep", "3600"]
+          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/ollama:latest
           ports:
             - containerPort: 11434
+          resources:
+            limits:
+              nvidia.com/gpu: 1  # Request one GPU
+            requests:
+              nvidia.com/gpu: 1  # Request one GPU
       nodeSelector:
-        app: ollama
+        gpu: "true"  # Use the GPU-enabled node as per the label in your Terraform script
       tolerations:
         - key: "gpu"
           operator: "Equal"
           value: "true"
-          effect: "NoSchedule"
+          effect: "NoSchedule"  # Ensure that the pod can be scheduled on the tainted node
