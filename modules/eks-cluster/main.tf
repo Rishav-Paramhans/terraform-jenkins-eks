@@ -107,9 +107,9 @@ module "eks" {
 
     ollama = {
       instance_types = ["g4dn.xlarge"] # GPU support
-      desired_size   = 1
+      desired_size   = 2
       min_size       = 1
-      max_size       = 2
+      max_size       = 3
       labels = {
         app = "ollama"
         gpu = "true"
