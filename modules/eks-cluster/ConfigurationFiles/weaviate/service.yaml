@@ -6,10 +6,12 @@ spec:
   selector:
     app: weaviate  # This should match the label in your deployment.yaml
   ports:
-    - protocol: TCP
-      port: 8080       # HTTP port
-      targetPort: 8080  # Expose port 8080 for HTTP access
-    - protocol: TCP
-      port: 50051      # gRPC port
-      targetPort: 50051  # Expose port 50051 for gRPC access
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051
   type: ClusterIP  # Use ClusterIP for internal communication; Change to LoadBalancer if external access is needed
