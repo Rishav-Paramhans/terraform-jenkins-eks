@@ -36,7 +36,7 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   # Use access_entries for access management
-  /*
+
   access_entries = {
     jenkins_access = {
       principal_arn = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
@@ -62,7 +62,7 @@ module "eks" {
         }
       }
     }
-  }*/
+
 
   eks_managed_node_groups = {
     frontend = {
