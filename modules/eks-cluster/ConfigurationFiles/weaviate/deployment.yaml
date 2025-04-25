@@ -16,7 +16,8 @@ spec:
         - name: weaviate
           image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/weaviate-custom:latest  # Your ECR image URI
           ports:
-            - containerPort: 8080
+            - containerPort: 8080   # HTTP port
+            - containerPort: 50051  # gRPC port
           env:
             - name: QUERY_DEFAULTS_LIMIT
               value: "25"
