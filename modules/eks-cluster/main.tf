@@ -119,6 +119,15 @@ module "eks" {
         value  = "true"
         effect = "NO_SCHEDULE"
       }]
+      # Add user_data to install NVIDIA drivers automatically
+      user_data = <<-EOF
+        #!/bin/bash
+        # Install NVIDIA drivers and CUDA
+        sudo amazon-linux-extras enable gpu
+        sudo yum install -y nvidia-driver
+        sudo yum install -y cuda
+        sudo reboot
+      EOF
     }
   }
 
