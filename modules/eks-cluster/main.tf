@@ -36,7 +36,7 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   # aws_auth configuration block for managing IAM user and role access
-  aws_auth = {
+  aws_auth_config_map = {
     map_users = [
       {
         userarn  = "arn:aws:iam::891612581521:user/vaibhav-user"
