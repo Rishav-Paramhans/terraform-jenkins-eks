@@ -32,9 +32,9 @@ module "eks" {
   subnet_ids                               = ["subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
   enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
-  manage_aws_auth_configmap = false
+  #manage_aws_auth_configmap = false
   cluster_endpoint_public_access = true
-  
+
   eks_managed_node_groups = {
     frontend = {
       instance_types = ["t3.medium"]
