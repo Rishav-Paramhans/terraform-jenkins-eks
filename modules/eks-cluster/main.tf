@@ -56,8 +56,6 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-  # ... other config ...
-}
 
   eks_managed_node_groups = {
     frontend = {
@@ -143,7 +141,7 @@ module "eks" {
     }
   }
 
-  cluster_tags = {
+  tags = {
     Environment = "dev"
     Terraform   = "true"
     Project     = "MyApp"
