@@ -32,7 +32,7 @@ module "eks" {
   subnet_ids                               = ["subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
   enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
-
+  manage_aws_auth_configmap = true
   cluster_endpoint_public_access = true
 
   # Use access_entries for access management
@@ -63,6 +63,19 @@ module "eks" {
       }
     }
   }
+  rishav_access = {
+      principal_arn = "arn:aws:iam::891612581521:user/rishav-user"
+      policy_associations = {
+        rishav_policy = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
 
   eks_managed_node_groups = {
     frontend = {
