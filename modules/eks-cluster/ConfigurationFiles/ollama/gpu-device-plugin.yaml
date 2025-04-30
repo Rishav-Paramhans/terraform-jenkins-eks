@@ -24,4 +24,6 @@ spec:
           image: nvidia/k8s-device-plugin:1.11
           resources:
             requests:
-              nvidia.com/gpu: "1"
+              nvidia.com/gpu: "1"  # The number of GPUs requested
+            limits:
+              nvidia.com/gpu: "1"  # The maximum number of GPUs allowed
