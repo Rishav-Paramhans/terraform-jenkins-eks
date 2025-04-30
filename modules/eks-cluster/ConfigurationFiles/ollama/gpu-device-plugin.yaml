@@ -1,5 +1,16 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gpu-device-plugin
+  namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      app: gpu-device-plugin
   template:
+    metadata:
+      labels:
+        app: gpu-device-plugin
     spec:
       nodeSelector:
         gpu: "true"
@@ -8,3 +19,9 @@ spec:
           operator: "Equal"
           value: "true"
           effect: "NoSchedule"
+      containers:
+        - name: nvidia-device-plugin
+          image: nvidia/k8s-device-plugin:1.11
+          resources:
+            requests:
+              nvidia.com/gpu: "1"
