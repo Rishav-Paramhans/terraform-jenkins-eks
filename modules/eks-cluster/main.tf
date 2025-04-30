@@ -24,7 +24,7 @@ data "terraform_remote_state" "network" {
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version         = "21.0.0"
+  version         = "20.36.0"
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
@@ -32,49 +32,30 @@ module "eks" {
   subnet_ids                               = ["subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
   enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
-  manage_aws_auth_configmap = true
+  #manage_aws_auth_configmap = true
   cluster_endpoint_public_access = true
 
-  # Use access_entries for access management
+  # Grant IAM access manually (replacement for access_entries)
+  aws_auth_roles = [
+    {
+      rolearn  = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
+      username = "jenkins"
+      groups   = ["system:masters"]
+    }
+  ]
 
-  access_entries = {
-    jenkins_access = {
-      principal_arn = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
-      policy_associations = {
-        jenkins_policy = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::891612581521:user/vaibhav-user"
+      username = "vaibhav"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::891612581521:user/rishav-user"
+      username = "rishav"
+      groups   = ["system:masters"]
     }
-    
-    # Add the new vaibhav_access entry for the IAM user "vaibhav-user"
-    vaibhav_access = {
-      principal_arn = "arn:aws:iam::891612581521:user/vaibhav-user"
-      policy_associations = {
-        rishav_policy = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  
-    rishav_access = {
-        principal_arn = "arn:aws:iam::891612581521:user/rishav-user"
-        policy_associations = {
-          rishav_policy = {
-            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-            access_scope = {
-              type = "cluster"
-            }
-          }
-        }
-      }
-    }
+  ]
 
 
   eks_managed_node_groups = {
@@ -135,16 +116,33 @@ module "eks" {
       # Add user_data to install NVIDIA drivers automatically
       user_data = <<-EOF
         #!/bin/bash
-        # Install NVIDIA drivers and CUDA
-        sudo amazon-linux-extras enable gpu
-        sudo yum install -y nvidia-driver
-        sudo yum install -y cuda
-        sudo reboot
+        set -xe
+
+        # Install required packages
+        yum update -y
+        yum install -y gcc dkms make curl
+
+        # Install NVIDIA driver
+        amazon-linux-extras enable epel
+        yum clean metadata
+        yum install -y nvidia-driver
+
+        # Optional: Install NVIDIA container toolkit for proper integration
+        distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+        curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | tee /etc/yum.repos.d/nvidia-docker.repo
+        yum install -y nvidia-docker2
+        systemctl restart docker
+
+        # Label this node explicitly for GPU workloads
+        echo 'KUBELET_EXTRA_ARGS=--node-labels=gpu=true' >> /etc/sysconfig/kubelet
+
+        reboot
       EOF
+
     }
   }
 
-  tags = {
+  cluster_tags = {
     Environment = "dev"
     Terraform   = "true"
     Project     = "MyApp"
