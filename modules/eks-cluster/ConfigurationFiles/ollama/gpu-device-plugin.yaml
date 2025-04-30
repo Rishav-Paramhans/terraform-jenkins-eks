@@ -1,0 +1,10 @@
+spec:
+  template:
+    spec:
+      nodeSelector:
+        gpu: "true"
+      tolerations:
+        - key: "gpu"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
