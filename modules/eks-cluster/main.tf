@@ -32,31 +32,9 @@ module "eks" {
   subnet_ids                               = ["subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
   enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
-  manage_aws_auth_configmap = true
+  manage_aws_auth_configmap = false
   cluster_endpoint_public_access = true
-
-  # aws_auth configuration block for managing IAM user and role access
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::891612581521:user/vaibhav-user"
-      username = "vaibhav-user"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::891612581521:user/rishav-user"
-      username = "rishav-user"
-      groups   = ["system:masters"]
-    }
-  ]
-
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
-      username = "jenkins-access"
-      groups   = ["system:masters"]
-    }
-  ]
-
+  
   eks_managed_node_groups = {
     frontend = {
       instance_types = ["t3.medium"]
