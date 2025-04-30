@@ -35,28 +35,29 @@ module "eks" {
   #manage_aws_auth_configmap = true
   cluster_endpoint_public_access = true
 
-  # Grant IAM access manually (replacement for access_entries)
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
-      username = "jenkins"
-      groups   = ["system:masters"]
-    }
-  ]
+  # aws_auth configuration block for managing IAM user and role access
+  aws_auth = {
+    map_users = [
+      {
+        userarn  = "arn:aws:iam::891612581521:user/vaibhav-user"
+        username = "vaibhav-user"
+        groups   = ["system:masters"]  # You can set specific user groups
+      },
+      {
+        userarn  = "arn:aws:iam::891612581521:user/rishav-user"
+        username = "rishav-user"
+        groups   = ["system:masters"]
+      }
+    ]
 
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::891612581521:user/vaibhav-user"
-      username = "vaibhav"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::891612581521:user/rishav-user"
-      username = "rishav"
-      groups   = ["system:masters"]
-    }
-  ]
-
+    map_roles = [
+      {
+        rolearn  = "arn:aws:iam::891612581521:role/jenkins-eks_cluster_admin_access-role"
+        username = "jenkins-access"
+        groups   = ["system:masters"]
+      }
+    ]
+  }
 
   eks_managed_node_groups = {
     frontend = {
