@@ -119,7 +119,7 @@ module "eks" {
       desired_size   = 5
       min_size       = 1
       max_size       = 7
-      key_name       = "jenkins-terraform-eks_KP.pem"
+      key_name       = "jenkins-terraform-eks_KP"
       labels = {
         app = "ollama"
         gpu = "true"
