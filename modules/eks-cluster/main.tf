@@ -61,7 +61,7 @@ module "eks" {
   eks_managed_node_group_defaults = {
     vpc_security_group_ids = [aws_security_group.eks_nodes.id]
   }
-  
+
   eks_managed_node_groups = {
     frontend = {
       instance_types = ["t3.medium"]
@@ -104,6 +104,7 @@ module "eks" {
     }
 
     ollama = {
+      ami_id = "ami-0915bcb5fa77e4892" # Amazon Deep Learning AMI for Amazon Linux 2 with NVIDIA drivers
       instance_types = ["g4dn.xlarge"] # GPU support
       desired_size   = 1
       min_size       = 1
@@ -117,31 +118,7 @@ module "eks" {
         value  = "true"
         effect = "NO_SCHEDULE"
       }]
-      # Add user_data to install NVIDIA drivers automatically
-      user_data = <<-EOF
-        #!/bin/bash
-        set -xe
-
-        # Install required packages
-        yum update -y
-        yum install -y gcc dkms make curl
-
-        # Install NVIDIA driver
-        amazon-linux-extras enable epel
-        yum clean metadata
-        yum install -y nvidia-driver
-
-        # Optional: Install NVIDIA container toolkit for proper integration
-        distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-        curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.repo | tee /etc/yum.repos.d/nvidia-docker.repo
-        yum install -y nvidia-docker2
-        systemctl restart docker
-
-        # Label this node explicitly for GPU workloads
-        echo 'KUBELET_EXTRA_ARGS=--node-labels=gpu=true' >> /etc/sysconfig/kubelet
-
-        reboot
-      EOF
+      
 
     }
   }
