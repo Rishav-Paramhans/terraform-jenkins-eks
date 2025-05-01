@@ -104,7 +104,7 @@ module "eks" {
     }
 
     ollama = {
-      ami_id = "ami-0915bcb5fa77e4892" # Amazon Deep Learning AMI for Amazon Linux 2 with NVIDIA drivers
+      ami_id = "ami-0422cc13218eca350" # eks optimised nvidia
       instance_types = ["g4dn.xlarge"] # GPU support
       desired_size   = 1
       min_size       = 1
@@ -119,7 +119,6 @@ module "eks" {
         effect = "NO_SCHEDULE"
       }]
       
-
     }
   }
 
