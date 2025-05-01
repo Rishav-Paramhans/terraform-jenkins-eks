@@ -19,9 +19,11 @@ spec:
             - containerPort: 11434
           resources:
             limits:
-              nvidia.com/gpu: 1  # Request one GPU
+              nvidia.com/gpu: 1
+              ephemeral-storage: "20Gi"     # <-- Add this
             requests:
-              nvidia.com/gpu: 1  # Request one GPU
+              nvidia.com/gpu: 1
+              ephemeral-storage: "15Gi"     # <-- And this
       nodeSelector:
         gpu: "true"  # Use the GPU-enabled node as per the label in your Terraform script
       tolerations:
