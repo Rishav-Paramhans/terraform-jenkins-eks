@@ -21,6 +21,28 @@ data "terraform_remote_state" "network" {
     }
   }
 }
+# --- Create Security Group for EKS Nodes ---
+resource "aws_security_group" "eks_nodes" {
+  name        = "eks_nodes_sg"
+  description = "Security group for EKS worker nodes"
+  vpc_id      = "vpc-01ca446be893bad0e"
+
+  tags = {
+    Name        = "eks_nodes_sg"
+    Environment = "dev"
+  }
+}
+
+# --- Allow Jenkins EC2 to Access EKS Nodes on HTTPS (443) ---
+resource "aws_security_group_rule" "jenkins_to_eks_nodes_https" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks_nodes.id
+  source_security_group_id = "sg-076b09078b9d3d760" # Jenkins EC2 SG
+  description              = "Allow Jenkins EC2 to access EKS nodes over HTTPS"
+}
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
@@ -34,7 +56,12 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
   #manage_aws_auth_configmap = false
   cluster_endpoint_public_access = true
+  cluster_endpoint_private_access = false
 
+  eks_managed_node_group_defaults = {
+    vpc_security_group_ids = [aws_security_group.eks_nodes.id]
+  }
+  
   eks_managed_node_groups = {
     frontend = {
       instance_types = ["t3.medium"]
