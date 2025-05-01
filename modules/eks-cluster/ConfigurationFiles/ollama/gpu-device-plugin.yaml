@@ -21,7 +21,7 @@ spec:
           effect: "NoSchedule"
       containers:
         - name: nvidia-device-plugin
-          image: nvidia/k8s-device-plugin:v0.13.0
+          image: nvidia/k8s-device-plugin:latest
           resources:
             requests: {}
             limits: {}
