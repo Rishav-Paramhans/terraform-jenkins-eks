@@ -116,7 +116,7 @@ module "eks" {
       taints = [{
         key    = "gpu"
         value  = "true"
-        effect = "NoSchedule"
+        effect = "NO_SCHEDULE"
       }]
       
     }
