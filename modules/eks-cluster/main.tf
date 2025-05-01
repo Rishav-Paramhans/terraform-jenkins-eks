@@ -116,9 +116,9 @@ module "eks" {
     ollama = {
       ami_type       = "AL2_x86_64_GPU"             # ADD THIS LINE
       instance_types = ["g4dn.xlarge"] # GPU support
-      desired_size   = 2
+      desired_size   = 5
       min_size       = 1
-      max_size       = 3
+      max_size       = 7
       key_name       = "jenkins-terraform-eks_KP.pem"
       labels = {
         app = "ollama"
