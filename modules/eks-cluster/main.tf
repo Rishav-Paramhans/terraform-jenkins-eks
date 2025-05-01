@@ -43,6 +43,16 @@ resource "aws_security_group_rule" "jenkins_to_eks_nodes_https" {
   source_security_group_id = "sg-076b09078b9d3d760" # Jenkins EC2 SG
   description              = "Allow Jenkins EC2 to access EKS nodes over HTTPS"
 }
+resource "aws_security_group_rule" "jenkins_to_eks_nodes_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks_nodes.id
+  source_security_group_id = "sg-076b09078b9d3d760" # Jenkins EC2's SG
+  description              = "Allow Jenkins EC2 to SSH into EKS nodes"
+}
+
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
@@ -108,7 +118,8 @@ module "eks" {
       instance_types = ["g4dn.xlarge"] # GPU support
       desired_size   = 2
       min_size       = 1
-      max_size       = 4
+      max_size       = 3
+      key_name       = "jenkins-terraform-eks_KP.pem"
       labels = {
         app = "ollama"
         gpu = "true"
