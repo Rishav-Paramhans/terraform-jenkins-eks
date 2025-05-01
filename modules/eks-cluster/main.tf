@@ -104,7 +104,7 @@ module "eks" {
     }
 
     ollama = {
-      ami_id = "ami-0422cc13218eca350" # eks optimised nvidia
+      ami_type       = "AL2_x86_64_GPU"             # ADD THIS LINE
       instance_types = ["g4dn.xlarge"] # GPU support
       desired_size   = 1
       min_size       = 1
@@ -116,7 +116,7 @@ module "eks" {
       taints = [{
         key    = "gpu"
         value  = "true"
-        effect = "NO_SCHEDULE"
+        effect = "NoSchedule"
       }]
       
     }
