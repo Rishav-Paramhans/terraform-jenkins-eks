@@ -160,6 +160,7 @@ module "eks" {
     Terraform   = "true"
     Project     = "MyApp"
   }
-  depends_on = [kubernetes_persistent_volume_claim.ollama_models]  # Ensure PVC is created before EKS nodes
+  #depends_on = [kubernetes_persistent_volume_claim.ollama_models]  
+  # Ensure PVC is created before EKS nodes
 }
 
