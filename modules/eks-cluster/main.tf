@@ -10,6 +10,11 @@ terraform {
 provider "aws" {
   region = "us-east-1"
 }
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_name
+}
+
 # Kubernetes provider block - This allows Terraform to communicate with your EKS cluster
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
