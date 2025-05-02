@@ -10,8 +10,11 @@ terraform {
 provider "aws" {
   region = "us-east-1"
 }
+# Kubernetes provider block - This allows Terraform to communicate with your EKS cluster
 provider "kubernetes" {
-  config_path = "/var/lib/jenkins/.kube/config"  # Update this path for Jenkins if needed
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
 }
 # Reference network outputs using terraform_remote_state
 data "terraform_remote_state" "network" {
