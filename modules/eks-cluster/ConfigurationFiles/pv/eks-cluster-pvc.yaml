@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-models-pvc  # This is the name of your PVC
+  namespace: default        # This is the namespace where the PVC will be created
+spec:
+  accessModes:
+    - ReadWriteOnce  # Should match the PV's access mode
+  resources:
+    requests:
+      storage: 100Gi  # This should match the PV's capacity
+  volumeName: eks-cluster-pv  # This links the PVC to your specific PV
+  storageClassName: gp2  # This should match the storage class used in the PV

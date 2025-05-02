@@ -65,24 +65,24 @@ resource "aws_security_group_rule" "jenkins_to_eks_nodes_ssh" {
 
 
 # --- Create PVC for Ollama models ---
-resource "kubernetes_persistent_volume_claim" "ollama_models" {
-  metadata {
-    name      = "ollama-models-pvc"
-    namespace = "default"
-  }
+#resource "kubernetes_persistent_volume_claim" "ollama_models" {
+#  metadata {
+#    name      = "ollama-models-pvc"
+#    namespace = "default"
+#  }
 
-  spec {
-    access_modes = ["ReadWriteOnce"]
+#  spec {
+#    access_modes = ["ReadWriteOnce"]
 
-    resources {
-      requests = {
-        storage = "100Gi"
-      }
-    }
+#    resources {
+#      requests = {
+#        storage = "100Gi"
+#      }
+#    }
 
-    volume_name = "eks-cluster-pv"  # Reference your manually created PV here
-  }
-}
+#    volume_name = "eks-cluster-pv"  # Reference your manually created PV here
+#  }
+#}
 
 
 module "eks" {
