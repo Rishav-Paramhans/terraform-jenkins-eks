@@ -15,18 +15,26 @@ spec:
       containers:
         - name: ollama
           image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/ollama:latest
-          imagePullPolicy: Always   # <-- This ensures the latest image is always pulled
+          imagePullPolicy: Always
           ports:
             - containerPort: 11434
           resources:
             limits:
               nvidia.com/gpu: 1
-              ephemeral-storage: "20Gi"     # <-- Add this
+              ephemeral-storage: "20Gi"
             requests:
               nvidia.com/gpu: 1
-              ephemeral-storage: "10Gi"     # <-- And this
+              ephemeral-storage: "10Gi"
+          volumeMounts:
+            - mountPath: /root/.ollama/models
+              name: ollama-models
+      volumes:
+        - name: ollama-models
+          persistentVolumeClaim:
+            claimName: ollama-models-pvc
       nodeSelector:
-        nvidia.com/gpu.present: "true"  # Match Terraform label
+        nvidia.com/gpu.present: "true"
+
       #tolerations:
       #  - key: "nvidia.com/gpu"
       #    operator: "Equal"

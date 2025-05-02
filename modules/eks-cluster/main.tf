@@ -10,7 +10,9 @@ terraform {
 provider "aws" {
   region = "us-east-1"
 }
-
+provider "kubernetes" {
+  config_path = "/var/lib/jenkins/.kube/config"  # Update this path for Jenkins if needed
+}
 # Reference network outputs using terraform_remote_state
 data "terraform_remote_state" "network" {
   backend = "remote"
@@ -51,6 +53,25 @@ resource "aws_security_group_rule" "jenkins_to_eks_nodes_ssh" {
   security_group_id        = aws_security_group.eks_nodes.id
   source_security_group_id = "sg-076b09078b9d3d760" # Jenkins EC2's SG
   description              = "Allow Jenkins EC2 to SSH into EKS nodes"
+}
+# --- Create PVC for Ollama models ---
+resource "kubernetes_persistent_volume_claim" "ollama_models" {
+  metadata {
+    name      = "ollama-models-pvc"
+    namespace = "default"
+  }
+
+  spec {
+    access_modes = ["ReadWriteOnce"]
+
+    resources {
+      requests = {
+        storage = "100Gi"
+      }
+    }
+
+    storage_class_name = "gp3"  # Or whatever default EBS SC you use
+  }
 }
 
 
@@ -134,5 +155,6 @@ module "eks" {
     Terraform   = "true"
     Project     = "MyApp"
   }
+  depends_on = [kubernetes_persistent_volume_claim.ollama_models]  # Ensure PVC is created before EKS nodes
 }
 
