@@ -121,7 +121,7 @@ module "eks" {
       max_size       = 7
       key_name       = "jenkins-terraform-eks_KP"
       labels = {
-        nvidia.com/gpu.present = "true"  # More specific label
+        "nvidia.com/gpu.present" = "true"  # More specific label
       }
       taints = []   # Remove taints if using GPU Operator's automated scheduling
       
