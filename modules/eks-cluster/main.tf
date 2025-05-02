@@ -54,6 +54,8 @@ resource "aws_security_group_rule" "jenkins_to_eks_nodes_ssh" {
   source_security_group_id = "sg-076b09078b9d3d760" # Jenkins EC2's SG
   description              = "Allow Jenkins EC2 to SSH into EKS nodes"
 }
+
+
 # --- Create PVC for Ollama models ---
 resource "kubernetes_persistent_volume_claim" "ollama_models" {
   metadata {
