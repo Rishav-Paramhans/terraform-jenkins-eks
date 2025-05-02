@@ -80,7 +80,7 @@ resource "kubernetes_persistent_volume_claim" "ollama_models" {
       }
     }
 
-    #storage_class_name = "gp3"  # Or whatever default EBS SC you use
+    storage_class_name = "gp2"  # Or whatever default EBS SC you use
   }
 }
 
