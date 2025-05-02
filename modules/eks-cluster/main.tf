@@ -114,7 +114,7 @@ module "eks" {
     }
 
     ollama = {
-      ami_type       = "AL2_x86_64_GPU"             # ADD THIS LINE
+      ami_type       = "amazon-eks-node-al2023-x86_64-nvidia-1.27-v20250501"             # ADD THIS LINE
       instance_types = ["g4dn.xlarge"] # GPU support
       desired_size   = 1
       min_size       = 1
