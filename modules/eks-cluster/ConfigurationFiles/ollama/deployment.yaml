@@ -21,10 +21,10 @@ spec:
           resources:
             limits:
               nvidia.com/gpu: 1
-              ephemeral-storage: "50Gi"     # <-- Add this
+              ephemeral-storage: "20Gi"     # <-- Add this
             requests:
               nvidia.com/gpu: 1
-              ephemeral-storage: "25Gi"     # <-- And this
+              ephemeral-storage: "10Gi"     # <-- And this
       nodeSelector:
         nvidia.com/gpu.present: "true"  # Match Terraform label
       #tolerations:
