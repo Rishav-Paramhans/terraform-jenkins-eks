@@ -147,7 +147,7 @@ module "eks" {
     ollama = {
       #ami_type       = "amazon-eks-node-al2023-x86_64-nvidia-1.27-v20250501"             # ADD THIS LINE
       ami_type       = "AL2023_x86_64_NVIDIA"             # ADD THIS LINE
-      instance_types = ["p3.8xlarge"] # GPU support
+      instance_types = ["g4dn.12xlarge"] # GPU support
       desired_size   = 2
       min_size       = 1
       max_size       = 7
