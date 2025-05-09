@@ -14,16 +14,21 @@ spec:
     spec:
       containers:
         - name: ollama
-          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/ollama:latest
+          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/ollama:v10
           imagePullPolicy: Always
           ports:
             - containerPort: 11434
+          env:
+            - name: OLLAMA_NUM_PARALLEL
+              value: "8"
+            - name: OLLAMA_MAX_LOADED_MODELS
+              value: "4"
           resources:
             limits:
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 4
               ephemeral-storage: "20Gi"
             requests:
-              nvidia.com/gpu: 1
+              nvidia.com/gpu: 4
               ephemeral-storage: "10Gi"
           volumeMounts:
             - mountPath: /root/.ollama/models
