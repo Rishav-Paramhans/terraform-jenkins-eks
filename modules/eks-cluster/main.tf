@@ -92,7 +92,7 @@ module "eks" {
   cluster_version = var.cluster_version
 
   vpc_id                                   = "vpc-01ca446be893bad0e"
-  subnet_ids                               = ["subnet-06200b096de56c246","subnet-019321a04dd211ec4", "subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
+  subnet_ids                               = ["subnet-0ffd0950ec3de3b50", "subnet-0932a11f28a59297c"]
   enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
   #manage_aws_auth_configmap = false
