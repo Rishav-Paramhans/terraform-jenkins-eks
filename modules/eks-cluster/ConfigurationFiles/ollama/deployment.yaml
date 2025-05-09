@@ -25,10 +25,10 @@ spec:
               value: "4"
           resources:
             limits:
-              nvidia.com/gpu: 4
+              nvidia.com/gpu: 1
               ephemeral-storage: "20Gi"
             requests:
-              nvidia.com/gpu: 4
+              nvidia.com/gpu: 1
               ephemeral-storage: "10Gi"
           volumeMounts:
             - mountPath: /root/.ollama/models
