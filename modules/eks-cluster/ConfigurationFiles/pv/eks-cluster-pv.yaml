@@ -12,5 +12,5 @@ spec:
   storageClassName: gp2  # This should match the storage class used in your PVC
   awsElasticBlockStore:
     #volumeID: "vol-0e31fc4a1728913df"  # Replace with your actual EBS volume ID
-    volumeID: "vol-09c21ac5f37c32835"
+    volumeID: "vol-02151aef6cae2d71f"
     fsType: ext4  # You can use ext4 or another file system based on your setup
