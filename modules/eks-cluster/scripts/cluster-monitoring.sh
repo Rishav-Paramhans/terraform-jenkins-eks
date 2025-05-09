@@ -1,4 +1,11 @@
 #!/bin/bash
+set -e
+
+CLUSTER_NAME="my-eks-cluster-vjuser"
+REGION="us-east-1"
+
+echo "🔧 Updating kubeconfig..."
+aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$REGION"
 
 # Install Helm if missing
 if ! command -v helm &> /dev/null; then
