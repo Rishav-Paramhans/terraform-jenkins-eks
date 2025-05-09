@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd-frontend-updated:v6
+          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd-frontend-updated:v10
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
