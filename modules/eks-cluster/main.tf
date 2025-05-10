@@ -43,7 +43,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 }
 resource "aws_iam_policy" "efs_csi_driver" {
-  name        = "AmazonEKS_EFS_CSI_Driver_Policy"
+  name        = "AmazonEKS_EFS_CSI_Driver_Policyy_${var.cluster_name}_v1"
   description = "IAM policy for EFS CSI driver to manage access points"
   policy      = jsonencode({
     Version = "2012-10-17",
