@@ -148,7 +148,7 @@ module "eks" {
       #ami_type       = "amazon-eks-node-al2023-x86_64-nvidia-1.27-v20250501"             # ADD THIS LINE
       ami_type       = "AL2023_x86_64_NVIDIA"             # ADD THIS LINE
       instance_types = ["g4dn.xlarge"] # GPU support
-      desired_size   = 2
+      desired_size   = 1
       min_size       = 1
       max_size       = 4
       key_name       = "jenkins-terraform-eks_KP"
