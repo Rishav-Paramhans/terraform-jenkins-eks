@@ -62,6 +62,81 @@ resource "aws_security_group_rule" "jenkins_to_eks_nodes_ssh" {
   source_security_group_id = "sg-076b09078b9d3d760" # Jenkins EC2's SG
   description              = "Allow Jenkins EC2 to SSH into EKS nodes"
 }
+# --- EFS Security Group (allows NFS from EKS Nodes SG) ---
+resource "aws_security_group" "efs" {
+  name        = "efs_sg"
+  description = "Allow NFS from EKS"
+  vpc_id      = "vpc-01ca446be893bad0e"
+
+  ingress {
+    from_port                = 2049
+    to_port                  = 2049
+    protocol                 = "tcp"
+    security_groups          = [aws_security_group.eks_nodes.id]  # Allow from EKS SG
+    description              = "Allow NFS from EKS Nodes"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "efs_sg"
+  }
+}
+
+# --- EFS File System ---
+resource "aws_efs_file_system" "this" {
+  creation_token = "efs-for-eks"
+  encrypted      = true
+
+  tags = {
+    Name = "eks-efs"
+  }
+}
+
+# --- Mount Targets in Subnets ---
+resource "aws_efs_mount_target" "subnet_a" {
+  file_system_id  = aws_efs_file_system.this.id
+  subnet_id       = "subnet-0ffd0950ec3de3b50"
+  security_groups = [aws_security_group.efs.id]
+}
+
+resource "aws_efs_mount_target" "subnet_b" {
+  file_system_id  = aws_efs_file_system.this.id
+  subnet_id       = "subnet-0932a11f28a59297c"
+  security_groups = [aws_security_group.efs.id]
+}
+
+# --- EFS Access Point ---
+resource "aws_efs_access_point" "this" {
+  file_system_id = aws_efs_file_system.this.id
+
+  root_directory {
+    path = "/ollama-data"
+    creation_info {
+      owner_uid   = 1001
+      owner_gid   = 1001
+      permissions = "700"
+    }
+  }
+
+  tags = {
+    Name = "eks-efs-ap"
+  }
+}
+
+# --- Outputs for YAML usage ---
+output "efs_file_system_id" {
+  value = aws_efs_file_system.this.id
+}
+
+output "efs_access_point_id" {
+  value = aws_efs_access_point.this.id
+}
 
 
 # --- Create PVC for Ollama models ---
