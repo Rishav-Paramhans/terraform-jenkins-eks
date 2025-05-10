@@ -80,7 +80,7 @@ resource "aws_iam_role" "efs_csi_irsa" {
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${module.eks.oidc_provider_arn}:sub" = "system:serviceaccount:kube-system:efs-csi-controller-sa"
+            "oidc.eks.us-east-1.amazonaws.com/id/9718D5D5301A5535E8C427506052A772:sub" = "system:serviceaccount:kube-system:efs-csi-controller-sa"
           }
         }
       }
