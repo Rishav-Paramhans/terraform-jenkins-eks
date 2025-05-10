@@ -42,6 +42,59 @@ resource "aws_security_group" "eks_nodes" {
     Environment = "dev"
   }
 }
+resource "aws_iam_policy" "efs_csi_driver" {
+  name        = "AmazonEKS_EFS_CSI_Driver_Policy"
+  description = "IAM policy for EFS CSI driver to manage access points"
+  policy      = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "elasticfilesystem:DescribeAccessPoints",
+          "elasticfilesystem:CreateAccessPoint",
+          "elasticfilesystem:DeleteAccessPoint",
+          "elasticfilesystem:DescribeFileSystems",
+          "elasticfilesystem:CreateMountTarget",
+          "elasticfilesystem:DescribeMountTargets",
+          "elasticfilesystem:ModifyMountTargetSecurityGroups",
+          "elasticfilesystem:DescribeFileSystemPolicy",
+          "elasticfilesystem:DeleteMountTarget"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+resource "aws_iam_role" "efs_csi_irsa" {
+  name = "eks-efs-csi-irsa-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = module.eks.oidc_provider_arn
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "${module.eks.oidc_provider_arn}:sub" = "system:serviceaccount:kube-system:efs-csi-controller-sa"
+          }
+        }
+      }
+    ]
+  })
+  depends_on = [module.eks]
+}
+resource "aws_iam_role_policy_attachment" "efs_csi_attach" {
+  role       = aws_iam_role.efs_csi_irsa.name
+  policy_arn = aws_iam_policy.efs_csi_driver.arn
+}
+output "efs_csi_irsa_role_arn" {
+  value = aws_iam_role.efs_csi_irsa.arn
+}
 
 # --- Allow Jenkins EC2 to Access EKS Nodes on HTTPS (443) ---
 resource "aws_security_group_rule" "jenkins_to_eks_nodes_https" {
