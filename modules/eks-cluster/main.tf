@@ -45,7 +45,7 @@ resource "aws_security_group" "eks_nodes" {
 resource "aws_iam_policy" "efs_csi_driver" {
   name        = "AmazonEKS_EFS_CSI_Driver_Policyy_${var.cluster_name}_v1"
   description = "IAM policy for EFS CSI driver to manage access points"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -55,6 +55,14 @@ resource "aws_iam_policy" "efs_csi_driver" {
           "elasticfilesystem:CreateAccessPoint",
           "elasticfilesystem:DeleteAccessPoint",
           "elasticfilesystem:DescribeFileSystems",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeTags",
+          "ec2:CreateTags",
+          "ec2:DeleteTags",
           "elasticfilesystem:CreateMountTarget",
           "elasticfilesystem:DescribeMountTargets",
           "elasticfilesystem:ModifyMountTargetSecurityGroups",
@@ -88,6 +96,12 @@ resource "aws_iam_role" "efs_csi_irsa" {
   })
   depends_on = [module.eks]
 }
+
+resource "aws_iam_role_policy_attachment" "efs_csi_driver_managed" {
+  role       = aws_iam_role.efs_csi_irsa.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+}
+
 resource "aws_iam_role_policy_attachment" "efs_csi_attach" {
   role       = aws_iam_role.efs_csi_irsa.name
   policy_arn = aws_iam_policy.efs_csi_driver.arn
@@ -122,11 +136,11 @@ resource "aws_security_group" "efs" {
   vpc_id      = "vpc-01ca446be893bad0e"
 
   ingress {
-    from_port                = 2049
-    to_port                  = 2049
-    protocol                 = "tcp"
-    security_groups          = [aws_security_group.eks_nodes.id]  # Allow from EKS SG
-    description              = "Allow NFS from EKS Nodes"
+    from_port       = 2049
+    to_port         = 2049
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_nodes.id] # Allow from EKS SG
+    description     = "Allow NFS from EKS Nodes"
   }
 
   egress {
@@ -224,7 +238,7 @@ module "eks" {
   enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
   #manage_aws_auth_configmap = false
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = false
 
   eks_managed_node_group_defaults = {
@@ -274,17 +288,17 @@ module "eks" {
 
     ollama = {
       #ami_type       = "amazon-eks-node-al2023-x86_64-nvidia-1.27-v20250501"             # ADD THIS LINE
-      ami_type       = "AL2023_x86_64_NVIDIA"             # ADD THIS LINE
-      instance_types = ["g4dn.xlarge"] # GPU support
+      ami_type       = "AL2023_x86_64_NVIDIA" # ADD THIS LINE
+      instance_types = ["g4dn.xlarge"]        # GPU support
       desired_size   = 1
       min_size       = 1
       max_size       = 4
       key_name       = "jenkins-terraform-eks_KP"
       labels = {
-        "nvidia.com/gpu.present" = "true"  # More specific label
+        "nvidia.com/gpu.present" = "true" # More specific label
       }
-      taints = []   # Remove taints if using GPU Operator's automated scheduling
-      
+      taints = [] # Remove taints if using GPU Operator's automated scheduling
+
     }
   }
 
