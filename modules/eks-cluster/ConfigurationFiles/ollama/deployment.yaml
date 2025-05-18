@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: ollama
-          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/ollama:v10
+          image: 891612581521.dkr.ecr.us-east-1.amazonaws.com/private-ai-deployment-ci-cd/ollama:v1.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 11434

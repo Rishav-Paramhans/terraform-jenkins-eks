@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fastapi-monitor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-app  # Must match your FastAPI service labels
+  endpoints:
+    - port: metrics-port  # Must match your FastAPI service port name
+      path: /metrics
+      interval: 15s         # Optional, but recommended for scrape frequency

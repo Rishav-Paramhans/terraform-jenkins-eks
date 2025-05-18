@@ -2,11 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
+  labels:  # ADD THESE LABELS
+    app: fastapi-app  # Must match ServiceMonitor selector
 spec:
   type: LoadBalancer
   selector:
     app: backend
   ports:
-    - protocol: TCP
+    - name: metrics-port
+      protocol: TCP
       port: 8000
       targetPort: 8000
