@@ -204,6 +204,20 @@ output "efs_file_system_id" {
 output "efs_access_point_id" {
   value = aws_efs_access_point.this.id
 }
+data "aws_ami" "eks_backend" {
+  most_recent = true
+  owners      = ["602401143452"] # Amazon EKS AMI owner
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-1.27-v*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
 
 resource "aws_launch_template" "backend_lt" {
   name_prefix   = "backend-node-lt-"
