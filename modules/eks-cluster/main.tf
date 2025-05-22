@@ -205,6 +205,27 @@ output "efs_access_point_id" {
   value = aws_efs_access_point.this.id
 }
 
+resource "aws_launch_template" "backend_lt" {
+  name_prefix   = "backend-node-lt-"
+  image_id      = data.aws_ami.eks_backend.id
+  instance_type = "t3.large"
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = 50          # <-- Increase root disk size to 50 GiB
+      volume_type = "gp2"       # <-- Use gp2 as requested
+      delete_on_termination = true
+    }
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "backend-node"
+    }
+  }
+}
 
 # --- Create PVC for Ollama models ---
 #resource "kubernetes_persistent_volume_claim" "ollama_models" {
@@ -264,7 +285,12 @@ module "eks" {
       labels = {
         app = "backend"
       }
+      launch_template = {
+        id      = aws_launch_template.backend_lt.id
+        version = "$Latest"
+      }
     }
+
 
     redis = {
       instance_types = ["t3.medium"]
